@@ -1,0 +1,51 @@
+﻿using MonthlyPremiums.Domain;
+using MonthlyPremiums.Domain.Entities;
+using MonthlyPremiums.Repository;
+using MonthlyPremiums.Service.Contracts;
+using MonthlyPremiums.Service.Exceptions;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace MonthlyPremiums.Service.Concretes
+{
+  public class OccupationService : IOccupationService
+  {
+    private List<Occupation> _occupations;
+    private IOccupationRepository _occupationRepository;
+
+    public OccupationService(IOccupationRepository occupationRepository)
+    {
+      _occupationRepository = occupationRepository;
+    }
+
+    public List<Occupation> GetAllOccupations()
+    {
+      _occupations = _occupationRepository.GetAllOccupations();
+
+      #region Business validation
+      if (_occupations == null)
+      {
+        throw new NotFoundException(CommonConstants.NO_OCCUPATIONS_FOUND_EXCEPTION);
+      }
+      #endregion
+
+
+      return _occupations;
+    }
+    public Occupation GetOccupationById(int id)
+    {
+      Occupation occupation = null;
+
+      #region Business validation
+      if (id <= 0)
+      {
+        // Log -> Constants.OCCUPATION_ID_NULL_ERROR;               
+        throw new NotFoundException(CommonConstants.NO_OCCUPATIONS_FOUND_EXCEPTION);
+      }
+      #endregion
+
+      occupation = GetAllOccupations().Where(ocup => ocup.Id == id).FirstOrDefault();
+      return occupation;
+    }
+  }
+}
