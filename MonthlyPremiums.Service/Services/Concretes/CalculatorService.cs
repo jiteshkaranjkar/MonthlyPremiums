@@ -16,6 +16,7 @@ namespace MonthlyPremiums.Service.Concretes
     public decimal? CalculateMonthlyPremium(CalculatorParameters calculatorParameters)
     {
       decimal? premium = null;
+      calculatorParameters.OccupationId = 1;
 
       // Get occupation details
       Occupation occupation = _occupationService.GetOccupationById(calculatorParameters.OccupationId);

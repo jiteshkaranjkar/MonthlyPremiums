@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MonthlyPremiums.Repository;
+using MonthlyPremiums.Service.Concretes;
+using MonthlyPremiums.Service.Contracts;
 
 namespace MonthlyPremiums.Web
 {
@@ -20,8 +22,11 @@ namespace MonthlyPremiums.Web
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-
+      services.AddInfrastructure();
       services.AddControllersWithViews();
+      services.AddScoped<IOccupationService, OccupationService>();
+      services.AddScoped<IRatingService, RatingService>();
+      services.AddScoped<ICalculatorService, CalculatorService>();
 
       // In production, the React files will be served from this directory
       services.AddSpaStaticFiles(configuration =>

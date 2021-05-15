@@ -18,7 +18,8 @@
     "MonthlyPremiums.Web": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "launchUrl": "Occupations",
+      "applicationUrl": "https://localhost:44304;http://localhost:44304",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

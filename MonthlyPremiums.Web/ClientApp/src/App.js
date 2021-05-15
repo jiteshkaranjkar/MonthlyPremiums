@@ -1,22 +1,37 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { Home } from './components/Home';
-import { FetchData } from './components/FetchData';
-import { Counter } from './components/Counter';
+import React, { Fragment, useState, useEffect } from 'react';
+import Header from "./components/header";
+import PremiumCalculator from "./components/PremiumCalculator";
 
 import './custom.css'
 
-export default class App extends Component {
-  static displayName = App.name;
+const App = () => {
+  const [monthlyPremium, setMonthlyPremium] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  render () {
-    return (
-      <Layout>
-        <Route exact path='/' component={Home} />
-        <Route path='/counter' component={Counter} />
-        <Route path='/fetch-data' component={FetchData} />
-      </Layout>
-    );
+  useEffect(() => {
+    getOccupationsWithRatings();
+  }, []);
+
+  async function getOccupationsWithRatings() {
+    const response = await fetch("https://localhost:44304/api/Occupation");
+    const result = await response.json();
+    setMonthlyPremium(result);
+    setLoading(false);
   }
+
+  return (
+    <Fragment>
+      {loading
+        ?
+        <p><em>Loading...</em></p>
+        :
+        <div>
+          <Header />
+          <PremiumCalculator occupations={monthlyPremium} />
+        </div>
+      }
+    </Fragment>
+  );
 }
+
+export default App;

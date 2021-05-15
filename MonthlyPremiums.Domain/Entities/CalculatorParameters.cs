@@ -3,22 +3,22 @@
   public class CalculatorParameters
   {
     /// <summary>
-    /// Your name
+    /// Customer name
     /// </summary>
     public string Name { get; set; }
 
     /// <summary>
-    /// Your age
+    /// Customer age
     /// </summary>
     public int Age { get; set; }
 
     /// <summary>
-    /// Your date of birth
+    /// Customer date of birth
     /// </summary>
     public string Dob { get; set; }
 
     /// <summary>
-    /// Occupation ID
+    /// Customer Occupation ID
     /// </summary>
     public int OccupationId { get; set; }
 
