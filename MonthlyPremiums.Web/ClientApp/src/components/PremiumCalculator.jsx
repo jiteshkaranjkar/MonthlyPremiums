@@ -27,12 +27,17 @@ export class PremiumCalculator extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.getMonthlyPremium = this.getMonthlyPremium.bind(this);
     this.calculateAge = this.calculateAge.bind(this);
+    this.validateInputFields = this.validateInputFields.bind(this);
+    this.handleChangeValidation = this.handleChangeValidation.bind(this);
+
     moment().format();
   }
 
   handleChange(event) {
-    if (event != undefined) {
+    if (event != undefined && event != 'Invalid Date') {
+      let eventName = '';
       if (event.target != null) {
+        eventName = event.target.name;
         switch (event.target.name) {
           case 'name':
             this.setState({
@@ -72,20 +77,23 @@ export class PremiumCalculator extends Component {
         }
       }
       else {
+        eventName = 'dob';
         this.calculateAge(event);
         this.setState({
           dateValue: event
         });
       }
+      this.handleChangeValidation(eventName);
+    }
+  }
 
-      if (this.state.name !== "" && this.state.dateValue !== "" && Number(this.state.occupation > 0) && Number(this.state.sumInsured) > 0 && Number(this.state.age) > 0 && (event.target.value !== '' || event !== '')) {
-        this.setState({
-          buttonDisabled: false
-        });
-      } else {
-        this.setState({
-          buttonDisabled: true
-        });
+  handleChangeValidation(eventName) {
+    if (this.state.name !== "" && this.state.dateValue !== "" && Number(this.state.occupation > 0) && Number(this.state.sumInsured) > 0 && Number(this.state.age) > 0) {
+      if (eventName != 'occupation') {
+        if (this.validateInputFields(this.state.occupation)) {
+          //OccupationId is passed irrespective of the condition above, since its used in the getMonthlyPremium()
+          this.getMonthlyPremium(this.state.occupation);
+        }
       }
     }
   }
@@ -117,9 +125,14 @@ export class PremiumCalculator extends Component {
         occupationErrorMsg: ''
       });
     }
-
-    if (this.state.name !== "" && this.state.dateValue !== "" && Number(event.target.value > 0) && Number(this.state.sumInsured) > 0 && Number(this.state.age) > 0) {
+    if (this.validateInputFields(event.target.value)) {
       this.getMonthlyPremium(event.target.value);
+    }
+  }
+
+  validateInputFields(ocptValue) {
+    if (this.state.name !== "" && this.state.dateValue !== "" && Number(ocptValue > 0) && Number(this.state.sumInsured) > 0 && Number(this.state.age) > 0) {
+      return true;
     } else {
       if (this.state.name === "") {
         this.setState({
@@ -131,7 +144,7 @@ export class PremiumCalculator extends Component {
           dateErrorMsg: 'Date Of Birth must be between 1901 to 2020 to calculate monthly premium.'
         });
       }
-      if (Number(event.target.value) <= 0) {
+      if (Number(ocptValue) <= 0) {
         this.setState({
           occupationErrorMsg: 'Please select an occupation to calculate monthly premium'
         });
@@ -141,6 +154,7 @@ export class PremiumCalculator extends Component {
           sumErrorMsg: 'Please enter Death - Sum Insured to calculate premium.'
         });
       }
+      return false;
     }
   }
 
@@ -153,7 +167,7 @@ export class PremiumCalculator extends Component {
       'occupationId': ocptValue,
       'deathSumInsured': this.state.sumInsured
     }
-    const response = await fetch('https://localhost:44304/api/Premium',
+    const response = await fetch('https://monthlypremiumcalculator.azurewebsites.net/api/Premium',
       {
         method: 'POST',
         headers: {
