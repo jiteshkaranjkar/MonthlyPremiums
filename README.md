@@ -8,7 +8,7 @@ Application is hosted in Azure - Pending
    * [Application Screenshots](#application-screenshots)
    * [Installation](#installation)
    * [Features](#features)
-   * [Application Results](#application-results)
+   * [Application Structure](#application-structure)
 	 * [Application User Stories](#application-user-stories)
 	 * [Test Data](#test-data)
 <!--te-->
@@ -29,14 +29,14 @@ Application is hosted in Azure - Pending
 **Monthly Premium Calculator feature**
 - Screens - Monthly Premium.
 - Built 5 different projects libraries
-- Web - responsible for the UI (i.e Client application - React SPA, Materail-UI) coordinated by controllers which execute around 2 different User stories.
+- Web - responsible for the UI (i.e Client application - React SPA, Materail-UI) coordinated by controllers which execute around 3 different User stories.
 - Domain - This is the Domain centric with no implementation and just Entities.
 - Services - Application Service layer which implements contracts and abstracts calls to Repository layer.
 - Repository - A Persitence layer with the idea of abstracting the data access concerns and option to use preferred data access technology. 
-- Tests - Unit Test using xUnit.net, Moq and InMemoryDatabase for more efficient unit testing and used TestHost for TestFixture. Unit test for React app is pending.
-- Application deployed in Azure (Pending) 
+- Tests(28) - Unit & Integration tests using xUnit.net, Moq and InMemoryDatabase for more efficient unit testing and used TestHost for TestFixture. Unit test for React app is pending.
+- Application deployed in Azure - https://monthlypremiumcalculator.azurewebsites.net/ 
 
-## Application Results
+## Application Structure
 Application structure results in following:
 - Independent of Frameworks - Core should not be dependent on external frameworks such as Entity Framework
 - Testable - The logic within Core can be tested independently of anything external, such as UI, databases, servers. Without external dependencies, the tests are very simple to write.
@@ -59,8 +59,15 @@ Application structure results in following:
 		When User clicks Calculate button 
 		Then In the backend the Doctor's rating i.e Professional and Factor of 1.0 teh calulation is done
     When All input is validated the formula used is "Death Premium = (Death Cover amount * Occupation Rating Factor * Age) /1000 * 12"
-    Then The calculated premium is return ed back to UI to user 
+    Then The calculated premium is returned back to UI to user 
 
+### User Story 3:
+- Given all the input fields are specified, change in the occupation dropdown should trigger the premium calculation
+		Given User selects any(other than "None") occupation dropdown 
+		When All the input fields have valid and expected values  
+		Then The POST request is submitted to the backend
+    And The calculated premium is returned back to UI to user 
+    But If any of the input fields have invalid data error message should be shown and not submitted.
 
 ## Test Data
 - All User stories are based on this test data and application is built using this test data

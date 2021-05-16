@@ -153,7 +153,7 @@ export class PremiumCalculator extends Component {
       'occupationId': ocptValue,
       'deathSumInsured': this.state.sumInsured
     }
-    const response = await fetch('https://localhost:44304/api/Premium',
+    const response = await fetch('https://monthlypremiumcalculator.azurewebsites.net/api/Premium',
       {
         method: 'POST',
         headers: {

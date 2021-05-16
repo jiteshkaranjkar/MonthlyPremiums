@@ -13,7 +13,7 @@ const App = () => {
   }, []);
 
   async function getOccupationsWithRatings() {
-    const response = await fetch("https://localhost:44304/api/Occupation");
+    const response = await fetch("https://monthlypremiumcalculator.azurewebsites.net/api/Occupation");
     const result = await response.json();
     setOccupations(result);
     setLoading(false);
