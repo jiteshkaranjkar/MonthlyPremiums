@@ -8,7 +8,8 @@ namespace MonthlyPremiums.Repository
   {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-      services.AddDbContext<OccupationDBContext>(options => options.UseInMemoryDatabase("MonthlyPremiums"), ServiceLifetime.Scoped, ServiceLifetime.Scoped);
+      services.AddDbContext<ApplicationDBContext>(options => options.UseInMemoryDatabase("MonthlyPremiums"), ServiceLifetime.Scoped, ServiceLifetime.Scoped);
+
       services.AddScoped<IOccupationRepository, OccupationRepository>();
 
       return services;

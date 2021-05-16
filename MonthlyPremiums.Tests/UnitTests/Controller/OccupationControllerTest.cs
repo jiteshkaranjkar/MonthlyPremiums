@@ -3,6 +3,7 @@ using MonthlyPremiums.Domain.Entities;
 using MonthlyPremiums.Presentation.Controllers;
 using MonthlyPremiums.Service.Contracts;
 using Moq;
+using System.Collections.Generic;
 using Xunit;
 
 namespace MonthlyPremiumsTest.Controller
@@ -23,8 +24,8 @@ namespace MonthlyPremiumsTest.Controller
     [Fact]
     public void Check_GetOccupations_ReturnsNull()
     {
-      MonthlyPremium monthlyPremium = _sutController.GetAllOccupations();
-      Assert.Null(monthlyPremium.occupationList);
+      List<Occupation> lstOccupation = _sutController.GetAllOccupations();
+      Assert.Null(lstOccupation);
     }
 
     [Theory]

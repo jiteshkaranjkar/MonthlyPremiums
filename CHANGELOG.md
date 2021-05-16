@@ -24,3 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added md files
 - Added ReadMe file
 - Added Changelog file
+
+
+## [0.0.4] - 2021-05-16
+### UI, validations and Unit Test 
+- UI Changes for input
+- Added Validations 
+- Added more Unit test

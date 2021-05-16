@@ -25,7 +25,6 @@ namespace MonthlyPremiums.Web
       services.AddInfrastructure();
       services.AddControllersWithViews();
       services.AddScoped<IOccupationService, OccupationService>();
-      services.AddScoped<IRatingService, RatingService>();
       services.AddScoped<ICalculatorService, CalculatorService>();
 
       // In production, the React files will be served from this directory

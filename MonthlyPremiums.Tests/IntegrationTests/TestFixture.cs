@@ -24,13 +24,13 @@ namespace MonthlyPremiumsTest.IntegrationTests
       Server = new TestServer(builder);
     }
 
-    public OccupationDBContext CreateDbContext()
+    public ApplicationDBContext CreateDbContext()
     {
-      var options = new DbContextOptionsBuilder<OccupationDBContext>()
+      var options = new DbContextOptionsBuilder<ApplicationDBContext>()
     .UseInMemoryDatabase("MonthlyPremiums")
     .Options;
 
-      var dbContext = new OccupationDBContext(options);
+      var dbContext = new ApplicationDBContext(options);
       return dbContext;
     }
 

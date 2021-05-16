@@ -3,7 +3,7 @@
 namespace MonthlyPremiums.Service.Contracts
 {
   public interface ICalculatorService
-    {
-        decimal? CalculateMonthlyPremium(CalculatorParameters calculatorParameters);
-    }
+  {
+    decimal? CalculateMonthlyPremium(CalculatorParameters calculatorParameters);
+  }
 }

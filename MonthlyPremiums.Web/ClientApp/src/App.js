@@ -5,7 +5,7 @@ import PremiumCalculator from "./components/PremiumCalculator";
 import './custom.css'
 
 const App = () => {
-  const [monthlyPremium, setMonthlyPremium] = useState([]);
+  const [occupations, setOccupations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ const App = () => {
   async function getOccupationsWithRatings() {
     const response = await fetch("https://localhost:44304/api/Occupation");
     const result = await response.json();
-    setMonthlyPremium(result);
+    setOccupations(result);
     setLoading(false);
   }
 
@@ -27,7 +27,7 @@ const App = () => {
         :
         <div>
           <Header />
-          <PremiumCalculator occupations={monthlyPremium} />
+          <PremiumCalculator occupations={occupations} />
         </div>
       }
     </Fragment>

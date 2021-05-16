@@ -7,9 +7,9 @@ namespace MonthlyPremiums.Repository
 {
   public class OccupationRepository : IOccupationRepository
   {
-    private OccupationDBContext _context;
+    private ApplicationDBContext _context;
 
-    public OccupationRepository(OccupationDBContext context)
+    public OccupationRepository(ApplicationDBContext context)
     {
       _context = context;
     }

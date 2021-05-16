@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { TextField, Button, FormHelperText, Grid, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import React, { useState } from "react";
+import { TextField, Button, Grid, FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
@@ -22,33 +24,42 @@ const PremiumCalculator = (props) => {
   const [age, setAge] = useState(0);
   const [sumInsured, setSumInsured] = useState(0);
   const [premium, setPremium] = useState(0);
-  const [occupation, setOccupation] = useState("");
+  const [occupation, setOccupation] = useState(0);
   const [buttonDisabled, setButtonDisabled] = useState(true);
-  const [dateValue, setDateValue] = useState(moment(new Date()).format("DD/MM/YYYY"));
+  const [dateValue, setDateValue] = useState(moment(Date.now()));
   const classes = useStyles();
 
   moment().format();
 
+
   const handleChange = (event) => {
     if (event != undefined) {
-      switch (event.target.name) {
-        case 'name':
-          setName(event.target.value);
-          break;
-        case 'sumInsured':
-          setSumInsured(event.target.value);
-          break;
-        case 'dob':
-          _calculateAge();
-          setDateValue(event.target.value)
-          break;
-        case 'occupation':
-          setOccupation(event.target.value);
-          break;
+      if (event.target != null) {
+        switch (event.target.name) {
+          case 'name':
+            setName(event.target.value);
+            break;
+          case 'sumInsured':
+            setSumInsured(event.target.value);
+            break;
+          case 'dob':
+            _calculateAge(event.target.value);
+            setDateValue(event.target.value);
+            break;
+          case 'occupation':
+            setOccupation(event.target.value);
+            break;
+        }
+      }
+      else {
+        _calculateAge(event);
+        setDateValue(event);
       }
 
-      if (name !== "" && dateValue !== "" && occupation != "" && Number(sumInsured) > 0) {
-        setButtonDisabled(!buttonDisabled)
+      if (name !== "" && dateValue !== "" && Number(occupation > 0) && Number(sumInsured) > 0 && Number(age) > 0 && (event.target.value !== '' || event !== '')) {
+        setButtonDisabled(false)
+      } else {
+        setButtonDisabled(true)
       }
     }
   }
@@ -58,54 +69,46 @@ const PremiumCalculator = (props) => {
     setSumInsured(0);
     setDateValue(new Date().toLocaleDateString('en-US'))
     setAge(0);
-    setOccupation('');
+    setOccupation(0);
     setButtonDisabled(false)
   }
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    let calculatorParameters = {
-      name: name,
-      age: age,
-      dob: dateValue,
-      occupation: occupation,
-      deathSumInsured: sumInsured
-    }
     getMonthlyPremium();
   }
 
 
   async function getMonthlyPremium() {
-    props.occupations.calculatorParameters = {
-
+   let premium = {
       'name': name,
-      'age': 234,
+      'age': age,
       'dob': dateValue,
-      'occupation': occupation,
+      'occupationId': occupation,
       'deathSumInsured': sumInsured
     }
     const response = await fetch('https://localhost:44304/api/Premium',
       {
         method: 'POST',
         headers: {
-          'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+          'Accept': 'application/json',
           'Content-Type': 'application/json; charset=UTF-8'
         },
-        body: JSON.stringify(props.occupations.calculatorParameters),
+        body: JSON.stringify(premium),
       });
     const result = await response.json();
     if (response.status == 200) {
-      if (response.json() != undefined)
+      if (response.json() != undefined) {
+        setPremium(result);
+      }
+      else {
         setPremium(0);
-    }
-    else {
-
+      }
     }
   }
 
-  const _calculateAge = () => { 
-    const calculatedAge = moment().diff(dateValue, 'years');
+  const _calculateAge = (inputDate) => {
+    const calculatedAge = moment().diff(inputDate, 'years');
     setAge(calculatedAge);
   }
 
@@ -120,29 +123,34 @@ const PremiumCalculator = (props) => {
             required
             label="Name"
             variant="outlined"
-            fullWidth
+            style={{ width: '85%' }}
             helperText="Please enter your Name"
             value={name}
             onChange={handleChange}
             className={classes.fields} />
         </Grid>
-        <Grid item sm={6}>
-          <TextField
-            name="dob"
-            required
-            variant="outlined"
-            label="DOB"
-            value={dateValue}
-            onChange={handleChange}
-            helperText="Please enter your Date Of Birth from 1901 to 2013"
-            type="date"
-            className={classes.fields}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
+        <Grid item xs={12} sm={6}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker
+              variant="inline"
+              autoOk="true"
+              format="dd/MM/yyyy"
+              margin="normal"
+              id="date-picker-inline"
+              name="dob"
+              required
+              label="DOB"
+              value={dateValue}
+              onChange={handleChange}
+              helperText="Please enter your Date Of Birth, must be between 1901 to 2020"
+              className={classes.fields}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+          </MuiPickersUtilsProvider>
         </Grid>
-        <Grid item sm={6}>
+        <Grid item xs={12} sm={6}>
           <TextField id="age"
             label="Age"
             variant="outlined"
@@ -153,7 +161,7 @@ const PremiumCalculator = (props) => {
             onChange={handleChange}
             className={classes.fields} />
         </Grid>
-        <Grid item sm={6} >
+        <Grid item xs={12} sm={6} >
           <FormControl
             variant="outlined"
             id="occupation"
@@ -166,13 +174,14 @@ const PremiumCalculator = (props) => {
               name="occupation"
               value={occupation}
               onChange={_calculateAge, handleChange}>
-              {props.occupations.occupationList.map(ocpt =>
-                <MenuItem key={ocpt.id} value={ocpt.name}>{ocpt.name}</MenuItem>)
+              {props.occupations.map(ocpt =>
+                <MenuItem key={ocpt.id} value={ocpt.id}>{ocpt.name}</MenuItem>)
               }
             </Select>
+            <FormHelperText>Please select Occupation</FormHelperText>
           </FormControl>
         </Grid>
-        <Grid item sm={6}>
+        <Grid item xs={12} sm={6}>
           <TextField
             name="sumInsured"
             required
@@ -181,17 +190,30 @@ const PremiumCalculator = (props) => {
             type="number"
             value={sumInsured}
             onChange={handleChange}
+            helperText="Please enter Sum Insured on Death"
             className={classes.fields} />
         </Grid>
-
-        <Grid item sm={6}>
+        {premium > 0 ?
+          <Grid item sm={12}>
+            <TextField
+              name="premium"
+              required
+              label="Monthly premium"
+              variant="outlined"
+              type="number"
+              value={premium}
+              helperText="Monthly Premium on Death for given Sum Insured"
+              className={classes.fields} />
+          </Grid>
+          : <div></div>}
+        <Grid item xs={12} sm={6}>
           <Button variant="contained"
             color="primary"
             type="submit" disabled={buttonDisabled} >
             Calculate
         </Button>
         </Grid>
-        <Grid item sm={6}>
+        <Grid item xs={12} sm={6}>
           <Button variant="contained"
             color="secondary"
             type="submit" onClick={reset}>

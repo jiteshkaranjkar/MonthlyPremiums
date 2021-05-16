@@ -3,14 +3,15 @@ using MonthlyPremiums.Domain.Entities;
 
 namespace MonthlyPremiums.Repository.Context
 {
-  public class OccupationDBContext : DbContext
+  public class ApplicationDBContext : DbContext
   {
-    public OccupationDBContext(DbContextOptions<OccupationDBContext> options) : base(options)
+    public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options)
     {
-      OccupationDBContextSeeder seedOccupations = new();
+      DBContextSeeder seedOccupations = new();
       seedOccupations.Seed(this);
     }
     public DbSet<Occupation> Occupations { get; set; }
+    public DbSet<Rating> Ratings { get; set; }
 
   }
 }

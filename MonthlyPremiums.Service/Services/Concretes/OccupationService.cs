@@ -3,11 +3,15 @@ using MonthlyPremiums.Domain.Entities;
 using MonthlyPremiums.Repository;
 using MonthlyPremiums.Service.Contracts;
 using MonthlyPremiums.Service.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MonthlyPremiums.Service.Concretes
 {
+  /// <summary>
+  /// Service class that fetches Occupations from the Repository
+  /// </summary>
   public class OccupationService : IOccupationService
   {
     private List<Occupation> _occupations;
@@ -21,7 +25,6 @@ namespace MonthlyPremiums.Service.Concretes
     public List<Occupation> GetAllOccupations()
     {
       _occupations = _occupationRepository.GetAllOccupations();
-
       #region Business validation
       if (_occupations == null)
       {
@@ -39,7 +42,6 @@ namespace MonthlyPremiums.Service.Concretes
       #region Business validation
       if (id <= 0)
       {
-        // Log -> Constants.OCCUPATION_ID_NULL_ERROR;               
         throw new NotFoundException(CommonConstants.NO_OCCUPATIONS_FOUND_EXCEPTION);
       }
       #endregion
