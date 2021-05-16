@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import Header from "./components/header";
-import PremiumCalculator from "./components/PremiumCalculator";
+import { PremiumCalculator } from "./components/PremiumCalculator";
 
 import './custom.css'
 

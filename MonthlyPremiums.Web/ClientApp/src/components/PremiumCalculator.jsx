@@ -1,91 +1,157 @@
-import React, { useState } from "react";
+import React, { Component } from "react";
 import { TextField, Button, Grid, FormControl, InputLabel, Select, MenuItem, FormHelperText } from "@material-ui/core";
-import { makeStyles } from '@material-ui/core/styles';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import moment from 'moment';
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  fields: {
-    margin: 20,
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    minWidth: 400,
-  },
-}));
 
+export class PremiumCalculator extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      name: "",
+      age: 0,
+      sumInsured: 0,
+      premium: 0,
+      occupation: 0,
+      dateValue: moment(Date.now()),
+      Occupations: [],
+      loading: true,
+      nameErrorMsg: '',
+      sumErrorMsg: '',
+      dateErrorMsg: '',
+      occupationErrorMsg: ''
+    }
+    this.handleChange = this.handleChange.bind(this);
+    this.reset = this.reset.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.getMonthlyPremium = this.getMonthlyPremium.bind(this);
+    this.calculateAge = this.calculateAge.bind(this);
+    moment().format();
+  }
 
-const PremiumCalculator = (props) => {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState(0);
-  const [sumInsured, setSumInsured] = useState(0);
-  const [premium, setPremium] = useState(0);
-  const [occupation, setOccupation] = useState(0);
-  const [buttonDisabled, setButtonDisabled] = useState(true);
-  const [dateValue, setDateValue] = useState(moment(Date.now()));
-  const classes = useStyles();
-
-  moment().format();
-
-
-  const handleChange = (event) => {
+  handleChange(event) {
     if (event != undefined) {
       if (event.target != null) {
         switch (event.target.name) {
           case 'name':
-            setName(event.target.value);
+            this.setState({
+              name: event.target.value
+            });
+            if (event.target.value !== '')
+              this.setState({
+                nameErrorMsg: ''
+              });
             break;
           case 'sumInsured':
-            setSumInsured(event.target.value);
+            this.setState({
+              sumInsured: event.target.value
+            });
+            if (Number(event.target.value) > 0) {
+              this.setState({
+                sumErrorMsg: ''
+              });
+            }
             break;
           case 'dob':
-            _calculateAge(event.target.value);
-            setDateValue(event.target.value);
+            this.calculateAge(event.target.value);
+            this.setState({
+              dateValue: event.target.value
+            });
             break;
           case 'occupation':
-            setOccupation(event.target.value);
+            this.setState({
+              occupation: event.target.value
+            });
+            if (Number(event.target.value) > 0) {
+              this.setState({
+                occupationErrorMsg: ''
+              });
+            }
             break;
         }
       }
       else {
-        _calculateAge(event);
-        setDateValue(event);
+        this.calculateAge(event);
+        this.setState({
+          dateValue: event
+        });
       }
 
-      if (name !== "" && dateValue !== "" && Number(occupation > 0) && Number(sumInsured) > 0 && Number(age) > 0 && (event.target.value !== '' || event !== '')) {
-        setButtonDisabled(false)
+      if (this.state.name !== "" && this.state.dateValue !== "" && Number(this.state.occupation > 0) && Number(this.state.sumInsured) > 0 && Number(this.state.age) > 0 && (event.target.value !== '' || event !== '')) {
+        this.setState({
+          buttonDisabled: false
+        });
       } else {
-        setButtonDisabled(true)
+        this.setState({
+          buttonDisabled: true
+        });
       }
     }
   }
 
-  const reset = () => {
-    setName('');
-    setSumInsured(0);
-    setDateValue(new Date().toLocaleDateString('en-US'))
-    setAge(0);
-    setOccupation(0);
-    setButtonDisabled(false)
-  }
-
-  const handleSubmit = (event) => {
+  reset(event) {
     event.preventDefault();
-    getMonthlyPremium();
+    this.setState({
+      name: '',
+      sumInsured: 0,
+      dateValue: new Date().toLocaleDateString('en-US'),
+      age: 0,
+      occupation: 0,
+      buttonDisabled: true,
+      nameErrorMsg: '',
+      sumErrorMsg: '',
+      dateErrorMsg: '',
+      occupationErrorMsg: '',
+      premium: 0
+    });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    this.setState({
+      occupation: event.target.value
+    });
+    if (Number(event.target.value) > 0) {
+      this.setState({
+        occupationErrorMsg: ''
+      });
+    }
+
+    if (this.state.name !== "" && this.state.dateValue !== "" && Number(event.target.value > 0) && Number(this.state.sumInsured) > 0 && Number(this.state.age) > 0) {
+      this.getMonthlyPremium(event.target.value);
+    } else {
+      if (this.state.name === "") {
+        this.setState({
+          nameErrorMsg: 'Please enter name to calculate monthly premium.'
+        });
+      }
+      if (moment().diff(this.state.dateValue, 'years') <= 0) {
+        this.setState({
+          dateErrorMsg: 'Date Of Birth must be between 1901 to 2020 to calculate monthly premium.'
+        });
+      }
+      if (Number(event.target.value) <= 0) {
+        this.setState({
+          occupationErrorMsg: 'Please select an occupation to calculate monthly premium'
+        });
+      }
+      if (Number(this.state.sumInsured) <= 0) {
+        this.setState({
+          sumErrorMsg: 'Please enter Death - Sum Insured to calculate premium.'
+        });
+      }
+    }
   }
 
 
-  async function getMonthlyPremium() {
-   let premium = {
-      'name': name,
-      'age': age,
-      'dob': dateValue,
-      'occupationId': occupation,
-      'deathSumInsured': sumInsured
+  async getMonthlyPremium(ocptValue) {
+    let premium = {
+      'name': this.state.name,
+      'age': this.state.age,
+      'dob': this.state.dateValue,
+      'occupationId': ocptValue,
+      'deathSumInsured': this.state.sumInsured
     }
     const response = await fetch('https://localhost:44304/api/Premium',
       {
@@ -98,132 +164,164 @@ const PremiumCalculator = (props) => {
       });
     const result = await response.json();
     if (response.status == 200) {
-      if (response.json() != undefined) {
-        setPremium(result);
+      if (result != undefined) {
+        this.setState({
+          premium: result
+        });
       }
       else {
-        setPremium(0);
+        this.setState({
+          premium: 0,
+          occupationErrorMsg: 'Error occured while calculating Monthly premium, please try again.'
+        });
       }
     }
   }
 
-  const _calculateAge = (inputDate) => {
+  calculateAge(inputDate) {
     const calculatedAge = moment().diff(inputDate, 'years');
-    setAge(calculatedAge);
+    this.setState({
+      age: calculatedAge
+    });
+    if (calculatedAge > 0) {
+      this.setState({
+        dateErrorMsg: ''
+      });
+    }
   }
 
-  return (
-    <form id="mpForm" noValidate
-      autoComplete="off"
-      onSubmit={handleSubmit}>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <TextField
-            name="name"
-            required
-            label="Name"
-            variant="outlined"
-            style={{ width: '85%' }}
-            helperText="Please enter your Name"
-            value={name}
-            onChange={handleChange}
-            className={classes.fields} />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              variant="inline"
-              autoOk="true"
-              format="dd/MM/yyyy"
-              margin="normal"
-              id="date-picker-inline"
-              name="dob"
-              required
-              label="DOB"
-              value={dateValue}
-              onChange={handleChange}
-              helperText="Please enter your Date Of Birth, must be between 1901 to 2020"
-              className={classes.fields}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-            />
-          </MuiPickersUtilsProvider>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField id="age"
-            label="Age"
-            variant="outlined"
-            value={moment().diff(dateValue, 'years')}
-            disabled
-            type="number"
-            helperText="Auto Calculated"
-            onChange={handleChange}
-            className={classes.fields} />
-        </Grid>
-        <Grid item xs={12} sm={6} >
-          <FormControl
-            variant="outlined"
-            id="occupation"
-            className={classes.fields}>
-            <InputLabel id="demo-simple-select-autowidth-label">Occupation</InputLabel>
-            <Select
-              labelId="demo-simple-select-autowidth-label"
-              required
-              label="Occupation"
-              name="occupation"
-              value={occupation}
-              onChange={_calculateAge, handleChange}>
-              {props.occupations.map(ocpt =>
-                <MenuItem key={ocpt.id} value={ocpt.id}>{ocpt.name}</MenuItem>)
-              }
-            </Select>
-            <FormHelperText>Please select Occupation</FormHelperText>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            name="sumInsured"
-            required
-            label="Death - Sum Insured"
-            variant="outlined"
-            type="number"
-            value={sumInsured}
-            onChange={handleChange}
-            helperText="Please enter Sum Insured on Death"
-            className={classes.fields} />
-        </Grid>
-        {premium > 0 ?
-          <Grid item sm={12}>
+  render() {
+    return (
+      <form id="mpForm" noValidate
+        autoComplete="off">
+        <Grid container spacing={3}>
+          <Grid item xs={12}
+            style={{ marginBottom: '20px' }}>
             <TextField
-              name="premium"
+              name="name"
               required
-              label="Monthly premium"
+              label="Name"
+              variant="outlined"
+              style={{ width: '83%' }}
+              helperText="Please enter your Name"
+              value={this.state.name}
+              onChange={this.handleChange} />
+            <FormControl>
+              {this.state.nameErrorMsg !== ''
+                ? <FormHelperText error id="component-error-text">Error : {this.state.nameErrorMsg}</FormHelperText>
+                : <div></div>}
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}
+            style={{ width: '65%', marginBottom: '20px' }}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                variant="inline"
+                autoOk="true"
+                format="dd/MM/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                name="dob"
+                required
+                label="DOB"
+                value={this.state.dateValue}
+                onChange={this.handleChange}
+                helperText="Please enter your Date Of Birth, must be between 1901 to 2020"
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
+            </MuiPickersUtilsProvider>
+            <FormControl>
+              {this.state.dateErrorMsg !== ''
+                ? <FormHelperText error id="component-error-text">Error : {this.state.dateErrorMsg}</FormHelperText>
+                : <div></div>}
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField id="age"
+              label="Age"
+              variant="outlined"
+              value={moment().diff(this.state.dateValue, 'years')}
+              disabled
+              type="number"
+              helperText="Auto Calculated"
+              style={{ width: '65%', marginBottom: '20px' }}
+              onChange={this.handleChange} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="sumInsured"
+              required
+              label="Death - Sum Insured"
               variant="outlined"
               type="number"
-              value={premium}
-              helperText="Monthly Premium on Death for given Sum Insured"
-              className={classes.fields} />
+              style={{ width: '65%', marginBottom: '20px' }}
+              value={this.state.sumInsured}
+              onChange={this.handleChange}
+              helperText="Please enter Sum Insured on Death" />
+            <FormControl>
+              {this.state.sumErrorMsg !== ''
+                ? <FormHelperText error id="component-error-text">Error : {this.state.sumErrorMsg}</FormHelperText>
+                : <div></div>}
+            </FormControl>
           </Grid>
-          : <div></div>}
-        <Grid item xs={12} sm={6}>
-          <Button variant="contained"
-            color="primary"
-            type="submit" disabled={buttonDisabled} >
-            Calculate
+          <Grid item xs={12} sm={6}>
+            <FormControl
+              variant="outlined"
+              required
+              id="occupation"
+              style={{ width: '65%', marginBottom: '20px' }}
+              className='textfield'>
+              <InputLabel id="demo-simple-select-autowidth-label">Occupation</InputLabel>
+              <Select
+                labelId="demo-simple-select-autowidth-label"
+                label="Occupation"
+                name="occupation"
+                value={this.state.occupation}
+                onChange={this.handleSubmit}>
+                <MenuItem value={this.state.occupation}>
+                  <em>None</em>
+                </MenuItem>
+                {this.props.occupations.map(ocpt =>
+                  <MenuItem key={ocpt.id} value={ocpt.id}>{ocpt.name}</MenuItem>)
+                }
+              </Select>
+              <FormHelperText>Please select Occupation</FormHelperText>
+              <FormControl>
+                {this.state.occupationErrorMsg !== ''
+                  ? <FormHelperText error id="component-error-text">Error : {this.state.occupationErrorMsg}</FormHelperText>
+                  : <div></div>}
+              </FormControl>
+            </FormControl>
+          </Grid>
+          {this.state.premium > 0 ?
+            <Grid item sm={12}>
+              <TextField
+                name="premium"
+                style={{ width: '65%' }}
+                required
+                label="Monthly premium"
+                variant="outlined"
+                type="number"
+                value={this.state.premium}
+                InputProps={{
+                  readOnly: true,
+                }}
+                helperText="Monthly Premium on Death for given Sum Insured"
+                className='textfield' />
+            </Grid>
+            : <div></div>}
+          <Grid item xs={12} sm={6}>
+            <Button variant="contained"
+              color="secondary"
+              type="submit" onClick={this.reset}>
+              Reset
         </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Button variant="contained"
-            color="secondary"
-            type="submit" onClick={reset}>
-            Reset
-        </Button>
-        </Grid>
-      </Grid>
 
-    </form>
-  );
+      </form>
+    );
+  }
 }
-
-export default PremiumCalculator;
