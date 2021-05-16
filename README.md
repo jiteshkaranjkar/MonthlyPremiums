@@ -15,7 +15,7 @@ Application is hosted in Azure - Pending
 
 ## Application Screenshots
 - Monthly Premium Screen - Basic screen to calculate Monthly Premium based on user input
-![Monthly Premium Screen]()
+![Monthly Premium Screen](https://github.com/jiteshkaranjkar/MonthlyPremiums/blob/master/ApplicationScreenshot.png)
 
 ## Installation
 **Steps of installation**
@@ -64,7 +64,7 @@ Application structure results in following:
 
 ## Test Data
 - All User stories are based on this test data and application is built using this test data
-![TestData]()
+![TestData](https://github.com/jiteshkaranjkar/MonthlyPremiums/blob/master/TestData.png)
 		     
 
 
