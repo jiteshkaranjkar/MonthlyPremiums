@@ -49,13 +49,22 @@ export class PremiumCalculator extends Component {
               });
             break;
           case 'sumInsured':
-            this.setState({
-              sumInsured: event.target.value
-            });
-            if (Number(event.target.value) > 0) {
+
+
+            if (Number(event.target.value) < 0) {
+
               this.setState({
-                sumErrorMsg: ''
+                sumErrorMsg: 'Please ensure the Sum Insured amount cannot be a -ve number.'
               });
+            } else {
+              this.setState({
+                sumInsured: event.target.value
+              });
+              if (Number(event.target.value) > 0) {
+                this.setState({
+                  sumErrorMsg: ''
+                });
+              }
             }
             break;
           case 'dob':
@@ -273,6 +282,7 @@ export class PremiumCalculator extends Component {
               style={{ width: '65%', marginBottom: '20px' }}
               value={this.state.sumInsured}
               onChange={this.handleChange}
+              inputProps={{ inputmode: 'numeric', pattern: '[0-9]*' }}
               helperText="Please enter Sum Insured on Death" />
             <FormControl>
               {this.state.sumErrorMsg !== ''
