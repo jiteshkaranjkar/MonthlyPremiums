@@ -46,7 +46,7 @@ namespace MonthlyPremiums.Service.Concretes
       }
       #endregion
 
-      occupation = GetAllOccupations().Where(ocup => ocup.Id == id).FirstOrDefault();
+      occupation = _occupationRepository.GetOccupationById(id);
       return occupation;
     }
   }

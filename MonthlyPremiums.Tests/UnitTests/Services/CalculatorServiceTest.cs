@@ -20,6 +20,37 @@ namespace MonthlyPremiumsTest.Services
       _sutCalculatorService = new CalculatorService(_mockOccupationService.Object);
     }
 
+    [Theory]
+    [InlineData(3, 7, 1.75, 129387, 19019.89)]
+    [InlineData(5, 119, 1.25, 764, 1363.74)]
+    [InlineData(1, 59, 1.00, 50000, 35400)]
+    [InlineData(6, 97, 1.50, 10, 17.46)]
+    public void Check_CalculateMonthlyPremium_WithTestData(int occupationId, int age, decimal factor, int deathSumInsured, decimal premiumAmount)
+    {
+      _mockOccupationService.Setup(ocpt => ocpt.GetOccupationById(occupationId)).Returns(
+        new Occupation
+        {
+          Id = occupationId,
+          Name = It.IsAny<String>(),
+          Rating = new()
+          {
+            Id = 1,
+            Name = It.IsAny<String>(),
+            Factor = factor
+          }
+        });
+      CalculatorParameters calParam = new()
+      {
+        Age = age,
+        OccupationId = occupationId,
+        DeathSumInsured = deathSumInsured
+      };
+
+      decimal premium = Math.Round(calParam.DeathSumInsured * factor * calParam.Age / 1000 * 12, 2);
+
+      Assert.Equal(premiumAmount, premium);
+    }
+
     [Fact]
     public void Check_CalculateMonthlyPremium_ThrowNullPointerException_WhenCalculatorParameters_IsNull()
     {

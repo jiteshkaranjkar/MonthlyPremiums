@@ -22,6 +22,26 @@ namespace MonthlyPremiumsTest.Services
       _sutOccupationService = new OccupationService(_mockOccupationRepository.Object);
     }
 
+    [Theory]
+    [InlineData(1)]
+    [InlineData(4)]
+    public void Check_GetOccupationById_WithTestData(int occupationId)
+    {
+      _mockOccupationRepository.Setup(ocpt => ocpt.GetOccupationById(occupationId)).Returns(
+        new Occupation
+        {
+          Id = occupationId,
+          Name = It.IsAny<String>(),
+          Rating = new() { 
+            Id = 1,
+            Name = It.IsAny<String>(),
+            Factor = 1.1m
+          }
+        });
+
+      Assert.Equal(occupationId, _sutOccupationService.GetOccupationById(occupationId).Id);
+    }
+
     [Fact]
     public void Check_GetAllOccupations_ReturnsNull()
     {

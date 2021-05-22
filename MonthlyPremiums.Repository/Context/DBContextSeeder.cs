@@ -12,7 +12,6 @@ namespace MonthlyPremiums.Repository.Context
     {
       SeedRatings(appDBContext);
       SeedOccupations(appDBContext);
-
     }
 
     private void SeedOccupations(ApplicationDBContext appDBContext)
