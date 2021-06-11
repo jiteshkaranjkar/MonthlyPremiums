@@ -45,8 +45,7 @@ namespace MonthlyPremiumsTest.Services
         OccupationId = occupationId,
         DeathSumInsured = deathSumInsured
       };
-
-      decimal premium = Math.Round(calParam.DeathSumInsured * factor * calParam.Age / 1000 * 12, 2);
+      decimal? premium = _sutCalculatorService.CalculateMonthlyPremium(calParam);
 
       Assert.Equal(premiumAmount, premium);
     }
